@@ -3,272 +3,226 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Mosaic — Stream Center</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<title>Mosaic — Indian Stream Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet"/>
 <style>
 :root {
-  --apple-bg: #000000;
-  --apple-glass: rgba(25, 25, 25, 0.7);
-  --apple-text: #ffffff;
-  --apple-muted: #86868b;
-  --apple-accent: #0071e3;
-  --radius-lg: 22px;
-  --radius-sm: 12px;
-  --blur: 25px;
+  --bg: #0a0c10;
+  --card-bg: rgba(255, 255, 255, 0.06);
+  --glass: rgba(20, 22, 26, 0.7);
+  --accent: #0071e3;
+  --text: #ffffff;
+  --text-muted: #9ca3af;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
 
 body {
-  font-family: 'Outfit', -apple-system, sans-serif;
-  background-color: var(--apple-bg);
-  background-image: radial-gradient(circle at 0% 0%, #1a1a1a 0%, #000000 100%);
-  color: var(--apple-text);
+  font-family: 'Outfit', sans-serif;
+  background: radial-gradient(circle at top right, #1a1c24, #0a0c10);
+  background-attachment: fixed;
+  color: var(--text);
   min-height: 100vh;
-  padding-bottom: 100px;
+  padding: 40px 5%;
 }
 
-/* ── HEADER ── */
-header {
-  padding: 40px 60px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-}
-.brand { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
-.brand span { color: var(--apple-muted); font-weight: 400; }
+/* ── LAYOUT ── */
+header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 50px; }
+.logo { font-size: 28px; font-weight: 800; letter-spacing: -1px; }
+.logo span { color: var(--accent); }
 
-/* ── SHELF ── */
-.shelf { padding: 0 60px; margin-top: 40px; }
-.shelf-title {
-  font-size: 22px; font-weight: 600; margin-bottom: 20px;
-  display: flex; justify-content: space-between; align-items: center;
-}
-.add-btn {
-  background: var(--apple-glass); border: 1px solid rgba(255,255,255,0.1);
-  color: #fff; padding: 8px 16px; border-radius: 20px; font-size: 13px;
-  cursor: pointer; transition: 0.2s; backdrop-filter: blur(10px);
-}
-.add-btn:hover { background: rgba(255,255,255,0.15); transform: scale(1.05); }
+h2 { font-size: 22px; font-weight: 600; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
 
-/* ── CARDS ── */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 24px;
+/* ── OTT CHANNELS ── */
+.ott-row { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 20px; scrollbar-width: none; }
+.ott-card {
+  flex: 0 0 140px; height: 80px; background: var(--card-bg);
+  border: 1px solid rgba(255,255,255,0.1); border-radius: 16px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  cursor: pointer; transition: 0.3s; backdrop-filter: blur(10px);
+  text-decoration: none; color: inherit; position: relative;
 }
-.card {
-  position: relative;
-  background: var(--apple-glass);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  aspect-ratio: 16 / 9;
-  border: 1px solid rgba(255,255,255,0.08);
-  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-  cursor: pointer;
-  display: flex; flex-direction: column; justify-content: flex-end;
-  padding: 20px;
-  backdrop-filter: blur(var(--blur));
-}
-.card:hover {
-  transform: scale(1.03);
-  border-color: rgba(255,255,255,0.3);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-}
-.card-overlay {
-  position: absolute; inset: 0;
-  background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 60%);
-  z-index: 1;
-}
-.card-content { position: relative; z-index: 2; }
-.card-title { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
-.card-meta { font-size: 13px; color: var(--apple-muted); display: flex; align-items: center; gap: 8px; }
-.card-tag { 
-    background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 4px; 
-    font-size: 10px; text-transform: uppercase; letter-spacing: 1px;
-}
+.ott-card:hover { transform: translateY(-5px); border-color: var(--accent); background: rgba(255,255,255,0.1); }
+.ott-card b { font-size: 14px; }
+.ott-del { position: absolute; top: 5px; right: 8px; font-size: 12px; opacity: 0; transition: 0.2s; color: #ff4d4d; }
+.ott-card:hover .ott-del { opacity: 1; }
 
-.play-trigger {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    width: 50px; height: 50px; background: #fff; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    opacity: 0; transition: 0.3s; z-index: 3;
+/* ── MOVIE GRID ── */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
+.movie-card {
+  background: var(--card-bg); border-radius: 24px; overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.08); transition: 0.4s cubic-bezier(0.2, 1, 0.2, 1);
+  cursor: pointer; position: relative;
 }
-.card:hover .play-trigger { opacity: 1; }
-.play-trigger svg { fill: #000; width: 20px; margin-left: 3px; }
+.movie-card:hover { transform: scale(1.02) translateY(-5px); border-color: rgba(255,255,255,0.3); }
 
-/* ── PLATFORM CHIPS ── */
-.platform-row { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px; }
-.platform-chip {
-    background: var(--apple-glass); border: 1px solid rgba(255,255,255,0.1);
-    padding: 12px 24px; border-radius: 50px; backdrop-filter: blur(10px);
-    display: flex; align-items: center; gap: 10px; text-decoration: none;
-    color: #fff; font-weight: 500; transition: 0.2s;
-}
-.platform-chip:hover { border-color: #fff; transform: translateY(-2px); }
+/* The Generated "Poster" */
+.poster { height: 180px; width: 100%; display: flex; align-items: center; justify-content: center; font-size: 40px; position: relative; }
+.poster-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); }
 
-/* ── MODAL ── */
-.modal-bg {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.8);
-  backdrop-filter: blur(15px); z-index: 1000;
-  display: flex; align-items: center; justify-content: center;
+.card-body { padding: 20px; position: relative; }
+.movie-title { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+.movie-meta { font-size: 13px; color: var(--text-muted); display: flex; align-items: center; gap: 10px; }
+.tag { background: var(--accent); color: white; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+
+/* ── MODALS ── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px);
+  display: flex; align-items: center; justify-content: center; z-index: 1000;
   opacity: 0; pointer-events: none; transition: 0.3s;
 }
-.modal-bg.active { opacity: 1; pointer-events: all; }
-.modal {
-  background: #1c1c1e; width: 90%; max-width: 450px;
-  border-radius: 28px; padding: 32px; border: 1px solid rgba(255,255,255,0.1);
-}
-.modal h2 { margin-bottom: 24px; font-weight: 600; }
-.input-group { margin-bottom: 20px; }
-.input-group label { display: block; font-size: 12px; color: var(--apple-muted); margin-bottom: 8px; text-transform: uppercase; }
-.input-group input, .input-group select {
-  width: 100%; background: #2c2c2e; border: none; padding: 14px;
-  border-radius: 12px; color: #fff; font-family: inherit; font-size: 15px;
-}
-.save-btn {
-  width: 100%; padding: 16px; background: #fff; color: #000;
-  border: none; border-radius: 14px; font-weight: 700; cursor: pointer;
-  margin-top: 10px;
-}
+.modal-overlay.active { opacity: 1; pointer-events: all; }
+.modal { background: #1c1c1e; width: 90%; max-width: 400px; padding: 30px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); }
+input { width: 100%; background: #2c2c2e; border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 12px; color: white; margin-bottom: 15px; font-family: inherit; }
+.btn-primary { width: 100%; padding: 15px; background: white; color: black; border: none; border-radius: 15px; font-weight: 700; cursor: pointer; }
+.btn-ghost { width: 100%; padding: 10px; background: transparent; color: var(--text-muted); border: none; cursor: pointer; margin-top: 10px; }
 
-@media (max-width: 600px) {
-  header, .shelf { padding: 20px; }
-  .grid { grid-template-columns: 1fr; }
-}
+/* ── ADD BUTTONS ── */
+.add-btn-circle { width: 40px; height: 40px; border-radius: 50%; background: white; color: black; border: none; font-size: 20px; cursor: pointer; }
+
 </style>
 </head>
 <body>
 
 <header>
-  <div class="brand">Mosaic <span>Plus</span></div>
+  <div class="logo">MOSAIC<span>.</span></div>
+  <button class="add-btn-circle" onclick="openModal('movieModal')">+</button>
 </header>
 
-<div class="shelf">
-  <div class="shelf-title">
-    Up Next
-    <button class="add-btn" onclick="toggleModal(true)">+ Add Show</button>
-  </div>
-  <div class="grid" id="watchGrid">
-    </div>
-</div>
+<section style="margin-bottom: 40px;">
+  <h2>Platforms <button class="add-btn-circle" style="width:25px; height:25px; font-size:14px;" onclick="openModal('ottModal')">+</button></h2>
+  <div class="ott-row" id="ottRow"></div>
+</section>
 
-<div class="shelf">
-  <div class="shelf-title">Channels</div>
-  <div class="platform-row" id="platRow">
-    </div>
-</div>
+<section>
+  <h2>Up Next</h2>
+  <div class="grid" id="movieGrid"></div>
+</section>
 
-<div class="modal-bg" id="modal">
+<div class="modal-overlay" id="movieModal">
   <div class="modal">
-    <h2>Add Tracking</h2>
-    <div class="input-group">
-      <label>Paste Link (Netflix/Jio/etc)</label>
-      <input type="text" id="mLink" placeholder="https://..." oninput="autoName(this.value)">
-    </div>
-    <div class="input-group">
-      <label>Title</label>
-      <input type="text" id="mTitle" placeholder="e.g. Stranger Things">
-    </div>
-    <div class="input-group">
-      <label>Episode/Note</label>
-      <input type="text" id="mNote" placeholder="e.g. S4 E2">
-    </div>
-    <button class="save-btn" onclick="saveItem()">Add to Shelf</button>
-    <button class="add-btn" style="width:100%; margin-top:10px;" onclick="toggleModal(false)">Cancel</button>
+    <h3 style="margin-bottom:20px">Add to Watchlist</h3>
+    <input type="text" id="mLink" placeholder="Paste Netflix/OTT link..." oninput="parseTitle(this.value)">
+    <input type="text" id="mTitle" placeholder="Movie or Show Name">
+    <input type="text" id="mNote" placeholder="Episode (e.g. S1 E5)">
+    <button class="btn-primary" onclick="addMovie()">Add to Shelf</button>
+    <button class="btn-ghost" onclick="closeModals()">Cancel</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="ottModal">
+  <div class="modal">
+    <h3 style="margin-bottom:20px">Add OTT Platform</h3>
+    <input type="text" id="oName" placeholder="Platform Name (e.g. Mubi)">
+    <input type="text" id="oUrl" placeholder="Website URL (https://...)">
+    <button class="btn-primary" onclick="addOTT()">Save Platform</button>
+    <button class="btn-ghost" onclick="closeModals()">Cancel</button>
   </div>
 </div>
 
 <script>
-let items = JSON.parse(localStorage.getItem('mosaic_v3')) || [];
+// Initial Indian OTT Setup
+const defaultOTTs = [
+    { name: 'JioCinema', url: 'https://www.jiocinema.com' },
+    { name: 'Hotstar', url: 'https://www.hotstar.com' },
+    { name: 'Netflix', url: 'https://www.netflix.com' },
+    { name: 'Prime Video', url: 'https://www.primevideo.com' },
+    { name: 'SonyLIV', url: 'https://www.sonyliv.com' },
+    { name: 'ZEE5', url: 'https://www.zee5.com' }
+];
 
-function toggleModal(show) {
-    document.getElementById('modal').classList.toggle('active', show);
-    if(show) document.getElementById('mLink').focus();
+let otts = JSON.parse(localStorage.getItem('mosaic_otts')) || defaultOTTs;
+let movies = JSON.parse(localStorage.getItem('mosaic_movies')) || [];
+
+function openModal(id) { document.getElementById(id).classList.add('active'); }
+function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active')); }
+
+function addOTT() {
+    const name = document.getElementById('oName').value;
+    const url = document.getElementById('oUrl').value;
+    if(!name || !url) return;
+    otts.push({ name, url });
+    save(); render(); closeModals();
 }
 
-function autoName(url) {
-    // Attempt to guess platform and show name from URL slugs
+function removeOTT(index, e) {
+    e.stopPropagation(); e.preventDefault();
+    otts.splice(index, 1);
+    save(); render();
+}
+
+function parseTitle(url) {
     try {
         const path = new URL(url).pathname;
-        const parts = path.split('/').filter(p => p.length > 3 && !/^\d+$/.test(p));
-        if(parts.length > 0) {
-            let name = parts[parts.length-1].replace(/-/g, ' ');
-            document.getElementById('mTitle').value = name.charAt(0).toUpperCase() + name.slice(1);
+        const slug = path.split('/').filter(p => p.length > 3 && isNaN(p)).pop();
+        if(slug) {
+            const clean = slug.replace(/-/g, ' ');
+            document.getElementById('mTitle').value = clean.charAt(0).toUpperCase() + clean.slice(1);
         }
     } catch(e) {}
 }
 
-function saveItem() {
-    const link = document.getElementById('mLink').value;
+function addMovie() {
     const title = document.getElementById('mTitle').value;
+    const link = document.getElementById('mLink').value;
     const note = document.getElementById('mNote').value;
-    
-    if(!title || !link) return alert("Title and Link required");
+    if(!title || !link) return;
 
-    const newItem = {
-        id: Date.now(),
-        title,
-        link,
-        note,
-        platform: getDomain(link)
-    };
+    movies.unshift({ id: Date.now(), title, link, note, platform: getDomain(link) });
+    save(); render(); closeModals();
+    document.getElementById('mTitle').value = ''; document.getElementById('mLink').value = '';
+}
 
-    items.unshift(newItem);
-    localStorage.setItem('mosaic_v3', JSON.stringify(items));
-    render();
-    toggleModal(false);
-    
-    // Reset form
-    document.getElementById('mLink').value = '';
-    document.getElementById('mTitle').value = '';
-    document.getElementById('mNote').value = '';
+function deleteMovie(id, e) {
+    e.stopPropagation();
+    movies = movies.filter(m => m.id !== id);
+    save(); render();
 }
 
 function getDomain(url) {
-    try {
-        const d = new URL(url).hostname.replace('www.','').split('.')[0];
-        return d.charAt(0).toUpperCase() + d.slice(1);
-    } catch(e) { return 'Link'; }
+    try { return new URL(url).hostname.replace('www.','').split('.')[0].toUpperCase(); } 
+    catch(e) { return 'LINK'; }
 }
 
-function deleteItem(id) {
-    items = items.filter(i => i.id !== id);
-    localStorage.setItem('mosaic_v3', JSON.stringify(items));
-    render();
+function generateGradient(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    const h1 = Math.abs(hash % 360);
+    const h2 = (h1 + 40) % 360;
+    return `linear-gradient(135deg, hsl(${h1}, 70%, 40%), hsl(${h2}, 80%, 20%))`;
+}
+
+function save() {
+    localStorage.setItem('mosaic_otts', JSON.stringify(otts));
+    localStorage.setItem('mosaic_movies', JSON.stringify(movies));
 }
 
 function render() {
-    const grid = document.getElementById('watchGrid');
-    grid.innerHTML = items.map(item => `
-        <div class="card" onclick="window.open('${item.link}', '_blank')">
-            <div class="card-overlay"></div>
-            <div class="play-trigger">
-                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-            </div>
-            <div class="card-content">
-                <div class="card-title">${item.title}</div>
-                <div class="card-meta">
-                    <span class="card-tag">${item.platform}</span>
-                    <span>${item.note || 'Ready to watch'}</span>
-                </div>
-            </div>
-            <button onclick="event.stopPropagation(); deleteItem(${item.id})" 
-                    style="position:absolute; top:15px; right:15px; background:none; border:none; color:rgba(255,255,255,0.3); cursor:pointer; z-index:10;">✕</button>
-        </div>
+    const ottRow = document.getElementById('ottRow');
+    ottRow.innerHTML = otts.map((o, i) => `
+        <a href="${o.url}" target="_blank" class="ott-card">
+            <span class="ott-del" onclick="removeOTT(${i}, event)">✕</span>
+            <b>${o.name}</b>
+        </a>
     `).join('');
 
-    // Render Quick Channels based on platforms added
-    const platRow = document.getElementById('platRow');
-    const uniquePlats = [...new Set(items.map(i => i.platform))];
-    platRow.innerHTML = uniquePlats.map(p => `
-        <div class="platform-chip">${p}</div>
-    `).join('') + `
-        <a href="https://www.netflix.com" target="_blank" class="platform-chip">Netflix</a>
-        <a href="https://www.jiocinema.com" target="_blank" class="platform-chip">JioCinema</a>
-        <a href="https://www.hotstar.com" target="_blank" class="platform-chip">Hotstar</a>
-    `;
+    const movieGrid = document.getElementById('movieGrid');
+    movieGrid.innerHTML = movies.map(m => `
+        <div class="movie-card" onclick="window.open('${m.link}', '_blank')">
+            <div class="poster" style="background: ${generateGradient(m.title)}">
+                ${m.title.charAt(0)}
+                <div class="poster-overlay"></div>
+            </div>
+            <div class="card-body">
+                <div class="movie-title">${m.title}</div>
+                <div class="movie-meta">
+                    <span class="tag">${m.platform}</span>
+                    <span>${m.note || 'Continue'}</span>
+                </div>
+                <div onclick="deleteMovie(${m.id}, event)" style="position:absolute; top:20px; right:20px; color:rgba(255,255,255,0.2)">✕</div>
+            </div>
+        </div>
+    `).join('');
 }
 
 render();
