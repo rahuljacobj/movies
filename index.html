@@ -261,7 +261,7 @@ main { max-width: 1180px; margin: 0 auto; padding: 40px 48px 80px; }
   border-radius: 10px; color: var(--text);
   font-family: 'Outfit', sans-serif; font-size: 14px;
   padding: 10px 13px; outline: none; width: 100%;
-  transition: border-color 0.18s, background 0.18s;
+  transition: all 0.18s;
 }
 .field input:focus, .field select:focus, .field textarea:focus {
   border-color: rgba(26,25,23,0.4); background: var(--surface);
@@ -383,7 +383,6 @@ main { max-width: 1180px; margin: 0 auto; padding: 40px 48px 80px; }
   </section>
 </main>
 
-<!-- WATCH MODAL -->
 <div class="backdrop" id="bdWatch" onclick="bdClick(event,'bdWatch')">
   <div class="modal">
     <div class="modal-head">
@@ -392,12 +391,14 @@ main { max-width: 1180px; margin: 0 auto; padding: 40px 48px 80px; }
     </div>
     <div class="form-stack">
       <input type="hidden" id="wId"/>
-      <div class="field"><label>Title</label><input id="wName" placeholder="e.g. Mirzapur"/></div>
+      <div class="field">
+        <label>Link or Title</label>
+        <input id="wName" placeholder="Paste OTT link to auto-fill..."/>
+      </div>
       <div class="field"><label>Platform</label><select id="wPlat"></select></div>
       <div class="field">
         <label>Where you stopped <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
         <input id="wWhere" placeholder="e.g. S2 E5 · 28 min in"/>
-        <div class="field-hint">Just a reminder — the platform itself remembers your position.</div>
       </div>
       <div class="field"><label>Icon</label><div class="emoji-row" id="wEmoji"></div></div>
       <button class="btn-primary" onclick="saveWatch()">Save</button>
@@ -406,7 +407,6 @@ main { max-width: 1180px; margin: 0 auto; padding: 40px 48px 80px; }
   </div>
 </div>
 
-<!-- PLATFORM MODAL -->
 <div class="backdrop" id="bdPlat" onclick="bdClick(event,'bdPlat')">
   <div class="modal">
     <div class="modal-head">
@@ -425,7 +425,6 @@ main { max-width: 1180px; margin: 0 auto; padding: 40px 48px 80px; }
   </div>
 </div>
 
-<!-- LINK MODAL -->
 <div class="backdrop" id="bdLink" onclick="bdClick(event,'bdLink')">
   <div class="modal">
     <div class="modal-head">
@@ -441,7 +440,6 @@ main { max-width: 1180px; margin: 0 auto; padding: 40px 48px 80px; }
   </div>
 </div>
 
-<!-- SETTINGS MODAL -->
 <div class="backdrop" id="bdSettings" onclick="bdClick(event,'bdSettings')">
   <div class="modal">
     <div class="modal-head">
@@ -456,7 +454,6 @@ main { max-width: 1180px; margin: 0 auto; padding: 40px 48px 80px; }
   </div>
 </div>
 
-<!-- CTX MENU -->
 <div class="ctx" id="ctx">
   <div class="ctx-item" onclick="ctxDo('edit')">✏️ Edit</div>
   <div class="ctx-item red" onclick="ctxDo('del')">🗑 Remove</div>
@@ -484,16 +481,16 @@ function load() {
   S = {
     name: '',
     platforms: [
-      { id:'p1', name:'JioCinema',   url:'https://www.jiocinema.com',   emoji:'⭐', color:'#7c3aed' },
+      { id:'p1', name:'JioCinema',    url:'https://www.jiocinema.com',   emoji:'⭐', color:'#7c3aed' },
       { id:'p2', name:'Prime Video', url:'https://www.primevideo.com',  emoji:'📦', color:'#00a8e0' },
-      { id:'p3', name:'Hotstar',     url:'https://www.hotstar.com',     emoji:'🏟', color:'#1d74f5' },
-      { id:'p4', name:'YouTube',     url:'https://www.youtube.com',     emoji:'▶️', color:'#ff0000' },
-      { id:'p5', name:'ZEE5',        url:'https://www.zee5.com',        emoji:'🟣', color:'#8b2fc9' },
+      { id:'p3', name:'Hotstar',      url:'https://www.hotstar.com',     emoji:'🏟', color:'#1d74f5' },
+      { id:'p4', name:'YouTube',      url:'https://www.youtube.com',     emoji:'▶️', color:'#ff0000' },
+      { id:'p5', name:'ZEE5',         url:'https://www.zee5.com',        emoji:'🟣', color:'#8b2fc9' },
     ],
     watching: [],
     links: [
       { id:'l1', emoji:'⚽', label:'Live Sports', url:'https://www.jiocinema.com/sports' },
-      { id:'l2', emoji:'📺', label:'Live TV',     url:'https://www.jiocinema.com/live-tv' },
+      { id:'l2', emoji:'📺', label:'Live TV',      url:'https://www.jiocinema.com/live-tv' },
     ]
   };
   save();
@@ -565,6 +562,34 @@ function goWatch(e, id) {
   if(p?.url) window.open(p.url,'_blank');
 }
 
+/* ── SMART PARSER ── */
+function smartParse(url) {
+  const clean = (str) => str.replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  let res = { name: '', platId: '', where: '' };
+  try {
+    const uri = new URL(url);
+    const domain = host(url);
+    const path = uri.pathname;
+    
+    // Auto-match existing platforms
+    const found = S.platforms.find(p => host(p.url).includes(domain.split('.')[0]));
+    if (found) res.platId = found.id;
+
+    // Guess Title from URL path
+    const parts = path.split('/').filter(p => p.length > 2 && !/^\d+$/.test(p) && !['watch','show','movie','series','tv-shows'].includes(p.toLowerCase()));
+    if (domain.includes('youtube')) {
+       res.name = "YouTube Content";
+    } else if (parts.length > 0) {
+       res.name = clean(parts[parts.length - 1]);
+    }
+
+    // Guess Season/Episode markers
+    const epMatch = url.match(/[se]\d+/gi);
+    if (epMatch) res.where = epMatch.join(' ').toUpperCase();
+  } catch(e){}
+  return res;
+}
+
 /* ── EMOJI / COLOR PICKERS ── */
 function buildEmoji(containerId, def) {
   selEmoji[containerId] = def||EMOJIS[0];
@@ -591,19 +616,35 @@ function pickColor(c,el) {
 
 /* ── WATCH MODAL ── */
 function openAddWatch() {
+  const ni = document.getElementById('wName');
   document.getElementById('wId').value='';
-  document.getElementById('wName').value='';
+  ni.value='';
   document.getElementById('wWhere').value='';
   document.getElementById('wDel').style.display='none';
   document.getElementById('wtTitle').textContent='Add to Watching';
   document.getElementById('wPlat').innerHTML=S.platforms.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');
+  
+  ni.oninput = (e) => {
+    if(e.target.value.startsWith('http')) {
+      const d = smartParse(e.target.value);
+      if(d.name) {
+        e.target.value = d.name;
+        if(d.platId) document.getElementById('wPlat').value = d.platId;
+        if(d.where) document.getElementById('wWhere').value = d.where;
+        toast("Smart-filled from link");
+      }
+    }
+  };
+
   buildEmoji('wEmoji','🎬');
   open('bdWatch');
 }
 function openEditWatch(id) {
   const w=S.watching.find(x=>x.id===id); if(!w)return;
+  const ni = document.getElementById('wName');
   document.getElementById('wId').value=id;
-  document.getElementById('wName').value=w.name;
+  ni.value=w.name;
+  ni.oninput = null; // Disable smart paste on edit
   document.getElementById('wWhere').value=w.where||'';
   document.getElementById('wDel').style.display='block';
   document.getElementById('wtTitle').textContent='Edit';
